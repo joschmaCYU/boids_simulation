@@ -23,10 +23,11 @@ enum Direction {
 // Defines a Collision typedef that represents collision data
 typedef std::tuple<bool, Direction, glm::vec2> Collision; // <collision?, what direction?, difference vector center - closest point>
 
-// Initial velocity of the Ball
+// Initial velocity of the boid
 const glm::vec2 INITIAL_BOID_VELOCITY(100.0f, -350.0f);
-// Radius of the ball object
+// Radius of the boid object
 const float BOID_RADIUS = 12.5f;
+const float BOID_VISION_RADIUS = 25.0f;
 
 class Game
 {
@@ -55,7 +56,6 @@ class Game
         void doCollisions();
         // reset
         void resetLevel();
-        void resetPlayer();
 };
 
 

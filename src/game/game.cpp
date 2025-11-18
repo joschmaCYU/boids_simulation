@@ -90,7 +90,7 @@ void Game::spawnBoids() {
         glm::vec2 randomPos = glm::vec2(disX(gen), disY(gen));
         glm::vec2 randomVel = glm::vec2(disVelX(gen), disVelY(gen));
         BoidObject boid(randomPos, BOID_RADIUS, randomVel,
-                        ResourceManager::GetTexture("face"));
+                        ResourceManager::GetTexture("face"), BOID_VISION_RADIUS);
         this->boidList.push_back(boid);
     }
 }
@@ -124,14 +124,6 @@ void Game::resetLevel()
         this->levels[2].load((levelPath + "/three.lvl").c_str(), this->width, this->height / 2);
     else if (this->level == 3)
         this->levels[3].load((levelPath + "/four.lvl").c_str(), this->width, this->height / 2);
-}
-
-void Game::resetPlayer()
-{
-    // reset player/ball stats
-    // player->size = PLAYER_SIZE;
-    // player->position = glm::vec2(this->width / 2.0f - PLAYER_SIZE.x / 2.0f, this->height - PLAYER_SIZE.y);
-    // boid->reset(player->position + glm::vec2(PLAYER_SIZE.x / 2.0f - BOID_RADIUS, -(BOID_RADIUS * 2.0f)), INITIAL_BOID_VELOCITY);
 }
 
 void Game::render()
