@@ -1,4 +1,5 @@
 #include "game_object.h"
+#include <math.h>
 
 
 GameObject::GameObject() 
@@ -11,4 +12,3 @@ void GameObject::draw(SpriteRenderer &renderer)
 {
     renderer.drawSprite(this->sprite, this->position, this->size, this->rotation, this->color);
 }
-

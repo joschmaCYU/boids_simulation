@@ -86,11 +86,11 @@ void Game::spawnBoids() {
     std::uniform_real_distribution<> disVelX(-100.0f, 100.0f);
     std::uniform_real_distribution<> disVelY(-100.0f, 100.0f);
     
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 10; i++) {
         glm::vec2 randomPos = glm::vec2(disX(gen), disY(gen));
         glm::vec2 randomVel = glm::vec2(disVelX(gen), disVelY(gen));
         BoidObject boid(randomPos, BOID_RADIUS, randomVel,
-                        ResourceManager::GetTexture("face"), BOID_VISION_RADIUS);
+                        ResourceManager::GetTexture("face"), BOID_VISION_ANGLE);
         this->boidList.push_back(boid);
     }
 }
@@ -99,7 +99,7 @@ void Game::update(float dt)
 {
     for (int i = 0; i < boidList.size(); i++)
     {
-        this->boidList[i].move(dt, this->width, this->height);
+        this->boidList[i].move(dt, this->width, this->height, boidList);
     }
     // this->doCollisions();
 

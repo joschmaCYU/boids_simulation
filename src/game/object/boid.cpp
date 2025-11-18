@@ -1,13 +1,12 @@
 #include "boid.h"
 
-
 BoidObject::BoidObject() 
-    : GameObject(), radius(12.5f), rotation(0.0f), visionRadius(25.0f) { }
+    : GameObject(), radius(12.5f), rotation(0.0f), visionAngle(120.0f) { }
 
-BoidObject::BoidObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite, float visionRadius)
-    : GameObject(pos, glm::vec2(radius * 2.0f, radius * 2.0f), sprite, glm::vec3(1.0f), velocity), radius(radius), rotation(0.0f), visionRadius(visionRadius) { }
+BoidObject::BoidObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite, float visionAngle)
+    : GameObject(pos, glm::vec2(radius * 2.0f, radius * 2.0f), sprite, glm::vec3(1.0f), velocity), radius(radius), rotation(0.0f), visionAngle(visionAngle) {}
 
-glm::vec2 BoidObject::move(float dt, unsigned int window_width, unsigned int window_height)
+glm::vec2 BoidObject::move(float dt, unsigned int window_width, unsigned int window_height, std::vector<BoidObject> boidList)
 {
     // Calculate angle to face direction of movement
     this->rotation = glm::degrees(glm::atan(this->velocity.y, this->velocity.x));
@@ -25,6 +24,32 @@ glm::vec2 BoidObject::move(float dt, unsigned int window_width, unsigned int win
     } else if (this->position.y >= window_height) {
         this->position.y = 0;
     }
+    
+    // don't colide with other boids
+    glm::vec2 avoidance = glm::vec2(0.0f);
+    int closeCount = 0;
+    
+    for (const BoidObject& otherBoid : boidList) {
+        if (&otherBoid == this) continue;
+        
+        glm::vec2 diff = this->position - otherBoid.position;
+        float distanceSq = glm::dot(diff, diff);
+        float minDistance = (this->radius + otherBoid.radius) * 3.0f;  // 3x radius separation
+        
+        if (distanceSq < minDistance * minDistance && distanceSq > 0.01f) {
+            // Accumulate separation vector (normalized and weighted by distance)
+            glm::vec2 separate = glm::normalize(diff) / glm::sqrt(distanceSq);
+            avoidance += separate;
+            closeCount++;
+        }
+    }
+    
+    // Apply accumulated avoidance
+    if (closeCount > 0) {
+        avoidance = glm::normalize(avoidance) * 150.0f;  // Strong avoidance speed
+        this->velocity = avoidance;  // Override velocity to escape
+    }
+
     // move to mouse cursor
 
     // move in group

@@ -27,7 +27,7 @@ typedef std::tuple<bool, Direction, glm::vec2> Collision; // <collision?, what d
 const glm::vec2 INITIAL_BOID_VELOCITY(100.0f, -350.0f);
 // Radius of the boid object
 const float BOID_RADIUS = 12.5f;
-const float BOID_VISION_RADIUS = 25.0f;
+const float BOID_VISION_ANGLE = 120.0f;
 
 class Game
 {

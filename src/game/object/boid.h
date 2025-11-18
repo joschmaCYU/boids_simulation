@@ -5,18 +5,19 @@
 #include "texture.h"
 #include <glm/glm.hpp>
 #include "../graphics/sprite_renderer.h"
+#include <vector>
 
 class BoidObject : public GameObject
 {
     public:
         float radius;
         float rotation;
-        float visionRadius;
+        float visionAngle;
 
         BoidObject();
-        BoidObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite, float visionRadius);
+        BoidObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite, float visionAngle);
 
-        glm::vec2 move(float dt, unsigned int window_width, unsigned int window_height);
+        glm::vec2 move(float dt, unsigned int window_width, unsigned int window_height, std::vector<BoidObject> boidlist);
         void reset(glm::vec2 position, glm::vec2 velocity);
         void draw(SpriteRenderer &renderer);
 }; 
