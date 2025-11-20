@@ -86,7 +86,7 @@ void Game::spawnBoids() {
     std::uniform_real_distribution<> disVelX(-100.0f, 100.0f);
     std::uniform_real_distribution<> disVelY(-100.0f, 100.0f);
     
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 25; i++) {
         glm::vec2 randomPos = glm::vec2(disX(gen), disY(gen));
         glm::vec2 randomVel = glm::vec2(disVelX(gen), disVelY(gen));
         BoidObject boid(randomPos, BOID_RADIUS, randomVel,

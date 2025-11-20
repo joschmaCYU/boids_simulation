@@ -46,13 +46,34 @@ glm::vec2 BoidObject::move(float dt, unsigned int window_width, unsigned int win
     
     // Apply accumulated avoidance
     if (closeCount > 0) {
-        avoidance = glm::normalize(avoidance) * 150.0f;  // Strong avoidance speed
-        this->velocity = avoidance;  // Override velocity to escape
+        avoidance = glm::normalize(avoidance) * 50.0f;  // Avoidance speed
+        this->velocity = this->velocity * 0.7f + avoidance * 0.3f;  // Blend with original velocity
     }
 
     // move to mouse cursor
 
     // move in group
+    std::vector<const BoidObject*> closeBoids;
+    glm::vec2 totalVelocity = glm::vec2(0.0f);
+
+    for (const BoidObject& otherBoid : boidList) {
+        if (&otherBoid == this) continue;
+        glm::vec2 diff = this->position - otherBoid.position;
+        float distance = glm::sqrt(glm::dot(diff, diff));
+        if (distance <= this->radius * 5) {
+            closeBoids.push_back(&otherBoid);
+            totalVelocity += otherBoid.velocity;  // Add other boid's velocity
+        }
+    }
+
+    if (closeBoids.size() > 0)
+    {
+        totalVelocity /= static_cast<float>(closeBoids.size());
+        glm::vec2 direction = glm::normalize(totalVelocity);
+        
+        this->velocity += direction * 50.0f;  // Align with group direction
+    }
+
 
     return this->position;
 }
