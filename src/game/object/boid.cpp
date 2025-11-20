@@ -74,6 +74,30 @@ glm::vec2 BoidObject::move(float dt, unsigned int window_width, unsigned int win
         this->velocity += direction * 50.0f;  // Align with group direction
     }
 
+    // Cohesion - move toward center of pack
+    glm::vec2 centerOfMass = glm::vec2(0.0f);
+    int cohesionCount = 0;
+
+    for (const BoidObject &otherBoid : boidList)
+    {
+        if (&otherBoid == this)
+            continue;
+        glm::vec2 diff = this->position - otherBoid.position;
+        float distance = glm::sqrt(glm::dot(diff, diff));
+
+        if (distance <= this->radius * 5)
+        {
+            centerOfMass += otherBoid.position;
+            cohesionCount++;
+        }
+    }
+
+    if (cohesionCount > 0)
+    {
+        centerOfMass /= static_cast<float>(cohesionCount);
+        glm::vec2 cohesionForce = glm::normalize(centerOfMass - this->position);
+        this->velocity += cohesionForce;
+    }
 
     return this->position;
 }

@@ -69,12 +69,6 @@ void Game::init()
     // this->levels.push_back(game);
     // this->level = 0;
 
-    // glm::vec2 playerPos = glm::vec2(
-    //     this->width / 2.0f - PLAYER_SIZE.x / 2.0f, 
-    //     this->height - PLAYER_SIZE.y
-    // );
-    // player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
-
     this->spawnBoids();
 }
 
@@ -101,13 +95,6 @@ void Game::update(float dt)
     {
         this->boidList[i].move(dt, this->width, this->height, boidList);
     }
-    // this->doCollisions();
-
-    // if (boid->position.y >= this->height) // did boid reach bottom edge?
-    // {
-    //     // this->resetLevel();
-    //     this->resetPlayer();
-    // }
 }
 
 void Game::resetLevel()
@@ -134,9 +121,7 @@ void Game::render()
         renderer->drawSprite(ResourceManager::GetTexture("background"), 
             glm::vec2(0.0f, 0.0f), glm::vec2(this->width, this->height), 0.0f
         );
-        // draw level
-        // this->levels[this->level].draw(*renderer);
-        // player->draw(*renderer);
+
         for (int i = 0; i < boidList.size(); i++)
         {
             this->boidList[i].draw(*renderer);
@@ -166,101 +151,6 @@ Direction VectorDirection(glm::vec2 target)
     return (Direction)best_match;
 }    
 
-typedef std::tuple<bool, Direction, glm::vec2> Collision;   
-
-Collision checkCollision(BoidObject &one, BoidObject &two) // AABB - Circle collision
-{
-    // get center point circle first 
-    glm::vec2 center(one.position + one.radius);
-    // calculate AABB info (center, half-extents)
-    glm::vec2 aabb_half_extents(two.size.x / 2.0f, two.size.y / 2.0f);
-    glm::vec2 aabb_center(
-        two.position.x + aabb_half_extents.x, 
-        two.position.y + aabb_half_extents.y
-    );
-    // get difference vector between both centers
-    glm::vec2 difference = center - aabb_center;
-    glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-    // add clamped value to AABB_center and we get the value of box closest to circle
-    glm::vec2 closest = aabb_center + clamped;
-    // retrieve vector between center circle and closest point AABB and check if length <= radius
-    difference = closest - center;
-    
-    if (glm::length(difference) <= one.radius)
-        return std::make_tuple(true, VectorDirection(difference), difference);
-    else
-        return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
-}      
-
-bool checkCollision(GameObject &one, GameObject &two) // AABB - AABB collision
-{
-    // collision x-axis?
-    bool collisionX = one.position.x + one.size.x >= two.position.x &&
-        two.position.x + two.size.x >= one.position.x;
-    // collision y-axis?
-    bool collisionY = one.position.y + one.size.y >= two.position.y &&
-        two.position.y + two.size.y >= one.position.y;
-    // collision only if on both axes
-    return collisionX && collisionY;
-}
-
-void Game::doCollisions()
-{
-    // for (int i = 0; i < boidList.size(); i++;)
-    // {
-    //         for (int j = 0; j < boidList.size(); j++) {
-    //         Collision collision = checkCollision(*boidList[i], *boidList[j]);
-    //         if (std::get<0>(collision)) // if collision is true
-    //         {
-    //             // destroy block if not solid
-    //             if (!box.isSolid)
-    //                 box.destroyed = true;
-    //             // collision resolution
-    //             Direction dir = std::get<1>(collision);
-    //             glm::vec2 diff_vector = std::get<2>(collision);
-    //             if (dir == LEFT || dir == RIGHT) // horizontal collision
-    //             {
-    //                 boid->velocity.x = -boid->velocity.x; // reverse horizontal velocity
-    //                 // relocate
-    //                 float penetration = boid->radius - std::abs(diff_vector.x);
-    //                 if (dir == LEFT)
-    //                     boid->position.x += penetration; // move boid to right
-    //                 else
-    //                     boid->position.x -= penetration; // move boid to left;
-    //             }
-    //             else // vertical collision
-    //             {
-    //                 boid->velocity.y = -boid->velocity.y; // reverse vertical velocity
-    //                 // relocate
-    //                 float penetration = boid->radius - std::abs(diff_vector.y);
-    //                 if (dir == UP)
-    //                     boid->position.y -= penetration; // move boid back up
-    //                 else
-    //                     boid->position.y += penetration; // move boid back down
-    //             }
-    //         }
-    //     }
-    // }
-    // check collisions for player pad (unless stuck)
-    // Collision result = checkCollision(*boid, *player);
-
-    // if (!boid->stuck && std::get<0>(result))
-    // {
-    //     // check where it hit the board, and change velocity based on where it hit the board
-    //     float centerboard = player->position.x + player->size.x / 2.0f;
-    //     float distance = (boid->position.x + boid->radius) - centerboard;
-    //     float percentage = distance / (player->size.x / 2.0f);
-    //     // then move accordingly
-    //     float strength = 2.0f;
-    //     glm::vec2 oldVelocity = boid->velocity;
-    //     boid->velocity.x = INITIAL_BOID_VELOCITY.x * percentage * strength;
-    //     //Ball->Velocity.y = -Ball->Velocity.y;
-    //     boid->velocity = glm::normalize(boid->velocity) * glm::length(oldVelocity); // keep speed consistent over both axes (multiply by length of old velocity, so total strength is not changed)
-    //     // fix sticky paddle
-    //     boid->velocity.y = -1.0f * abs(boid->velocity.y);
-    // }
-}
-
 using namespace std;
 
 void Game::addKeyToProcess(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -279,25 +169,4 @@ void Game::processInput(float dt) {
 
     if (this->state != GAME_ACTIVE)
         return;
-
-    // float velocity = PLAYER_VELOCITY * dt;
-    // if (keys[GLFW_KEY_LEFT]) {
-    //     if (player->position.x >= 0.0f)
-    //     {
-    //         player->position.x -= velocity;
-    //         if (ball->stuck)
-    //             ball->position.x -= velocity;
-    //     }
-    // }
-    // if (keys[GLFW_KEY_RIGHT])
-    // {
-    //     if (player->position.x <= this->width - player->size.x)
-    //     {
-    //         player->position.x += velocity;
-    //         if (ball->stuck)
-    //             ball->position.x += velocity;
-    //     }
-    // }
-    // if (this->keys[GLFW_KEY_SPACE])
-    //     ball->stuck = false;
 }

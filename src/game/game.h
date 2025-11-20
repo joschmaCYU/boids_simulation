@@ -53,7 +53,6 @@ class Game
         void render();
         std::vector<GameLevel> levels;
         unsigned int level;
-        void doCollisions();
         // reset
         void resetLevel();
 };
